@@ -1,7 +1,5 @@
 package com.example.compassapp.ui.splash
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -20,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +32,11 @@ import kotlinx.coroutines.delay
 fun Splash(navigation: NavHostController) {
     LaunchedEffect(true) {
         delay(1500)
-        navigation.navigate(NavGraph.Compass.route)
+        navigation.navigate(NavGraph.Compass.route){
+            popUpTo(NavGraph.Splash.route) {
+                inclusive = true
+            }
+        }
     }
     SplashScreen()
 }
@@ -42,8 +45,14 @@ fun Splash(navigation: NavHostController) {
 fun SplashScreen() {
     val isDarkTheme = isSystemInDarkTheme()
     Box(
-        modifier = Modifier.fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                if (isDarkTheme) {
+                    MaterialTheme.colorScheme.background
+                } else {
+                    Color.White
+            } ),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -54,8 +63,7 @@ fun SplashScreen() {
 
         ) {
             Image(
-                painter = painterResource(
-                    if (isDarkTheme) R.drawable.splashdark else R.drawable.splashday),
+                painter = painterResource(R.mipmap.compass),
                 contentDescription = "Splash Screen Logo",
                 modifier = Modifier.size(200.dp, 200.dp)
                     .clip(CircleShape)

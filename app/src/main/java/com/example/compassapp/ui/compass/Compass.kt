@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.compassapp.data.CompassViewModelFactory
 import com.example.compassapp.data.SensorRepository
 import com.example.compassapp.ui.theme.CompassAppTheme
@@ -37,9 +36,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun CompassScreen(
-    navHostController: NavHostController,
-) {
+fun CompassScreen() {
     val context = LocalContext.current
     val sensorRepository = remember { SensorRepository(context) }
     val viewModel: CompassViewModel = viewModel(
@@ -49,15 +46,16 @@ fun CompassScreen(
     CompassComponent(
         heading = state.value.heading,
         magneticStrength = state.value.magneticStrength,
+        accelerometer = state.value.accelerometer,
         isDarkTheme = state.value.isDarkTheme
     )
 }
-
 
 @Composable
 fun CompassComponent(
     heading: Float = 0f,
     magneticStrength: Float = 0f,
+    accelerometer: Float = 0f,
     isDarkTheme: Boolean = true
 ) {
     val direction = remember(heading) {
@@ -91,6 +89,8 @@ fun CompassComponent(
             Text("${heading.toInt()}°", fontSize = 32.sp, color = textColor)
             Text(direction, fontSize = 20.sp, color = textColor)
             Text("Magnetic Strength $magneticStrength µT", fontSize = 14.sp, color = textColor)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Current acceleration $accelerometer m/s²", fontSize = 14.sp, color = textColor)
         }
     }
 }

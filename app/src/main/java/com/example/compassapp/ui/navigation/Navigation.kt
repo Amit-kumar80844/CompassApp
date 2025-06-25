@@ -11,12 +11,12 @@ import com.example.compassapp.ui.splash.Splash
 fun Navigate(
     navHostController: NavHostController
 ) {
-    NavHost(navController = navHostController, startDestination = NavGraph.Compass.route) {
+    NavHost(navController = navHostController, startDestination = NavGraph.Splash.route) {
        composable(route = NavGraph.Splash.route) {
            Splash(navHostController)
         }
         composable(route = NavGraph.Compass.route) {
-            CompassScreen(navHostController)
+            CompassScreen()
         }
     }
 }

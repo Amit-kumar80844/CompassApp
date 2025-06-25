@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.compassapp.ui.compass.CompassViewModel
 
 
+@Suppress("UNCHECKED_CAST")
 class CompassViewModelFactory(
     private val sensorRepository: SensorRepository
 ) : ViewModelProvider.Factory {
