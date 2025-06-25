@@ -1,30 +1,41 @@
 package com.example.compassapp.ui.compass
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.compassapp.data.OrientationAngles
+import com.example.compassapp.data.SensorRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.Serializable
 
-class CompassViewModel : ViewModel() {
-    var heading by mutableFloatStateOf(0f)
-        private set
+@Serializable
+data class CompassState(
+    val heading: Float = 0f,
+    val magneticStrength: Float = 0f,
+    val isDarkTheme: Boolean = false
+)
 
-    var magneticStrength by mutableFloatStateOf(0f)
-        private set
+class CompassViewModel(
+    private val sensorRepository: SensorRepository
+) : ViewModel() {
 
-    var isDarkTheme by mutableStateOf(false)
-        private set
+    private val _uiState = MutableStateFlow(CompassState())
+    val uiState: StateFlow<CompassState> = _uiState
 
-    fun updateHeading(newHeading: Float) {
-        heading = newHeading
-    }
+    init {
+        sensorRepository.orientationFlow()
+            .onEach { orientation ->
+                _uiState.value = _uiState.value.copy(heading = orientation.azimuth)
+            }
+            .launchIn(viewModelScope)
 
-    fun updateMagneticStrength(newStrength: Float) {
-        magneticStrength = newStrength
-    }
-
-    fun setDarkTheme(isDark: Boolean) {
-        isDarkTheme = isDark
+        sensorRepository.magneticStrengthFlow()
+            .onEach { strength ->
+                _uiState.value = _uiState.value.copy(magneticStrength = strength)
+            }
+            .launchIn(viewModelScope)
     }
 }

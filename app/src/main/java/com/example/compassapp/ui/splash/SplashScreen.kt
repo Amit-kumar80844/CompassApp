@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,13 +27,15 @@ import androidx.navigation.NavHostController
 import com.example.compassapp.R
 import com.example.compassapp.ui.navigation.NavGraph
 import com.example.compassapp.ui.theme.CompassAppTheme
+import kotlinx.coroutines.delay
 
 @Composable
-fun Splash(navigation : NavHostController){
+fun Splash(navigation: NavHostController) {
+    LaunchedEffect(true) {
+        delay(1500)
+        navigation.navigate(NavGraph.Compass.route)
+    }
     SplashScreen()
-    Handler(Looper.getMainLooper()).postDelayed({
-        navigation.navigate(NavGraph.Compass)
-    },1500) // 1.5 seconds delay only for splash screen
 }
 
 @Composable

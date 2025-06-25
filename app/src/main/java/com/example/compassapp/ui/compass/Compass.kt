@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,30 +24,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.compassapp.data.CompassViewModelFactory
+import com.example.compassapp.data.SensorRepository
 import com.example.compassapp.ui.theme.CompassAppTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun CompassScreen(navigation : NavHostController) {
-    @Composable
-    fun CompassScreen(viewModel: CompassViewModel) {
-        CompassComponent(
-            heading = viewModel.heading,
-            magneticStrength =viewModel.magneticStrength,
-            isDarkTheme = viewModel.isDarkTheme
-        )
-    }
+fun CompassScreen(
+    navHostController: NavHostController,
+) {
+    val context = LocalContext.current
+    val sensorRepository = remember { SensorRepository(context) }
+    val viewModel: CompassViewModel = viewModel(
+        factory = CompassViewModelFactory(sensorRepository)
+    )
+    val state = viewModel.uiState.collectAsState()
+    CompassComponent(
+        heading = state.value.heading,
+        magneticStrength = state.value.magneticStrength,
+        isDarkTheme = state.value.isDarkTheme
+    )
 }
+
 
 @Composable
 fun CompassComponent(
-    heading: Float = 320f,
-    magneticStrength: Float = 49f,
+    heading: Float = 0f,
+    magneticStrength: Float = 0f,
     isDarkTheme: Boolean = true
 ) {
     val direction = remember(heading) {
@@ -73,7 +84,7 @@ fun CompassComponent(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             RotatingCompassDial(
-                heading = heading,
+                heading = heading + 90f,
                 isDarkTheme = isDarkTheme
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -191,7 +202,6 @@ fun RotatingCompassDial(heading: Float, isDarkTheme: Boolean) {
         // This is drawn OVER the rotating dial
         Canvas(modifier = Modifier.fillMaxSize()) {
             val center = Offset(size.width / 2, size.height / 2)
-
             val arrowColor = if (isDarkTheme) Color.Black else Color.Red
             val redDotColor = if (isDarkTheme) Color.Red else Color.Transparent
 
